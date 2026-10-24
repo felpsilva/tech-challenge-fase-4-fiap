@@ -70,7 +70,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       signOut,
       hasPermission: (...permissions) => hasSessionPermission(session, permissions),
       canManageContent: hasSessionPermission(session, ['admin', 'professor']),
-      canManageUsers: hasSessionPermission(session, ['admin']),
+      canManageUsers: hasSessionPermission(session, ['admin', 'professor']),
     }),
     [isLoading, session],
   );

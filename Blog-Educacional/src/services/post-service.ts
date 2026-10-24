@@ -1,4 +1,4 @@
-import { apiRequest } from '@/lib/api-client';
+import { apiRequest, apiUploadFile } from '@/lib/api-client';
 import { API_BASE_URL } from '@/constants/api';
 import { CreatePostInput, Post, UpdatePostInput } from '@/types/api';
 
@@ -28,7 +28,12 @@ export const postService = {
     return apiRequest<void>(`/post/${id}`, { method: 'DELETE', token });
   },
 
-  thumbnailUrl(id: number) {
-    return `${API_BASE_URL}/post/${id}/thumbnail`;
+  thumbnailUrl(id: number, version?: string | number) {
+    const url = `${API_BASE_URL}/post/${id}/thumbnail`;
+    return version ? `${url}?v=${encodeURIComponent(String(version))}` : url;
+  },
+
+  uploadThumbnail(token: string, id: number, file: { uri: string; name: string; type: string }) {
+    return apiUploadFile(`/post/${id}/thumbnail`, token, file);
   },
 };
