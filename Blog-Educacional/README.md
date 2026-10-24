@@ -2,6 +2,24 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Integração com a API
+
+A camada de integração está organizada em `src/services` e `src/lib`:
+
+- `authService` autentica usuários em `/user/signin`;
+- `postService` implementa leitura, busca, criação, edição e exclusão de posts;
+- `categoryService` implementa o CRUD de categorias;
+- `userService` implementa o CRUD de usuários, incluindo alunos e professores por meio do campo `permission`;
+- `useAuth` disponibiliza a sessão persistida e as permissões da conta.
+
+Por padrão, o app usa a API publicada em `https://blog-educacional-backend-1.onrender.com`. Para apontar para outra instância, crie um arquivo `.env` baseado em `.env.example`:
+
+```env
+EXPO_PUBLIC_API_URL=https://sua-api.example.com
+```
+
+Posts podem ser consultados sem autenticação. A API autoriza alterações de posts e o CRUD de categorias para `admin` e `professor`; o CRUD de usuários fica restrito a `admin`. Essa regra também está disponível no contexto de autenticação por meio de `canManageContent` e `canManageUsers`, mas a validação definitiva continua sendo feita pelo backend.
+
 ## Get started
 
 1. Install dependencies
