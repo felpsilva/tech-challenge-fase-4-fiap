@@ -30,7 +30,7 @@ export default function AdminPostsScreen() {
     {error && <Message>{error}</Message>}
     {!posts.length && !error && <ActivityIndicator color={theme.brand} />}
     {posts.map((post) => <View key={post.id} style={[styles.row, { borderColor: theme.border, backgroundColor: theme.background }]}>
-      <Pressable style={styles.info} onPress={() => router.push({ pathname: '/posts/[id]', params: { id: String(post.id) } })}><ThemedText style={styles.title}>{post.title}</ThemedText><ThemedText type="small" style={{ color: theme.textSecondary }}>{post.status} · professor #{post.user_id}</ThemedText></Pressable>
+      <Pressable style={styles.info} onPress={() => router.push({ pathname: '/posts/[id]', params: { id: String(post.id) } })}><ThemedText style={styles.title}>{post.title}</ThemedText><ThemedText type="small" style={{ color: theme.textSecondary }}>{post.status}· {post.user_id}</ThemedText></Pressable>
       <View style={contentStyles.row}><ActionButton variant="secondary" onPress={() => router.push({ pathname: '/admin/posts/[id]', params: { id: String(post.id) } })}>Editar</ActionButton><ActionButton variant="danger" onPress={() => void remove(post.id)}>Excluir</ActionButton></View>
     </View>)}
   </ScrollView></Page>;
