@@ -22,7 +22,7 @@ function getErrorMessage(body: unknown, status: number): string {
     const message = (body as ApiErrorBody).message;
     if (message) return message;
   }
-  return `API request failed with status ${status}`;
+  return `Falha na requisição à API (status ${status}).`;
 }
 
 export async function apiRequest<T>(
@@ -42,7 +42,7 @@ export async function apiRequest<T>(
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   } catch (error) {
-    throw new ApiError(error instanceof Error ? error.message : 'Unable to connect to the API', 0);
+    throw new ApiError(error instanceof Error ? error.message : 'Não foi possível conectar à API.', 0);
   }
 
   const responseText = await response.text();
@@ -75,7 +75,7 @@ export async function apiUploadFile<T>(
       body: formData,
     });
   } catch (error) {
-    throw new ApiError(error instanceof Error ? error.message : 'Unable to connect to the API', 0);
+    throw new ApiError(error instanceof Error ? error.message : 'Não foi possível conectar à API.', 0);
   }
 
   const responseText = await response.text();

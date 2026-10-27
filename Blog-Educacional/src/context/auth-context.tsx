@@ -27,16 +27,20 @@ function hasSessionPermission(
 function decodeTokenPayload(token: string) {
   const encodedPayload = token.split('.')[1];
   if (!encodedPayload) {
-    throw new Error('Invalid authentication token');
+    throw new Error('Token de autenticação inválido.');
   }
 
   const base64 = encodedPayload.replace(/-/g, '+').replace(/_/g, '/');
   const padding = '='.repeat((4 - (base64.length % 4)) % 4);
-  return JSON.parse(atob(`${base64}${padding}`)) as {
-    id: number;
-    username: string;
-    permission: Permission;
-  };
+  try {
+    return JSON.parse(atob(`${base64}${padding}`)) as {
+      id: number;
+      username: string;
+      permission: Permission;
+    };
+  } catch {
+    throw new Error('Token de autenticação inválido.');
+  }
 }
 
 export function AuthProvider({ children }: PropsWithChildren) {
@@ -81,7 +85,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth deve ser usado dentro de um AuthProvider.');
   }
   return context;
 }

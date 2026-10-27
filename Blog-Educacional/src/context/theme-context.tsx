@@ -43,14 +43,12 @@ function writeStoredThemeMode(mode: ThemeMode): void {
     try {
       window.localStorage.setItem(THEME_STORAGE_KEY, mode);
     } catch {
-      // O tema continua funcionando durante a sessão mesmo sem persistência.
+      void 0;
     }
     return;
   }
 
-  void SecureStore.setItemAsync(THEME_STORAGE_KEY, mode).catch(() => {
-    // O tema continua funcionando durante a sessão mesmo sem persistência.
-  });
+  void SecureStore.setItemAsync(THEME_STORAGE_KEY, mode).catch(() => {});
 }
 
 export function ThemeModeProvider({ children }: PropsWithChildren) {
