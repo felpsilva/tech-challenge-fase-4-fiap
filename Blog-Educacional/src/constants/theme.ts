@@ -20,8 +20,8 @@ export const Colors = {
   },
   dark: {
     text: '#E8ECF3',
-    background: '#0D1117',
-    backgroundElement: '#161B22',
+    background: '#0d1117',
+    backgroundElement: '#161b22',
     backgroundSelected: '#17263D',
     textSecondary: '#A7B0BE',
     brand: '#79B0FF',

@@ -6,6 +6,7 @@ import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
+import { ThemeToggle } from './theme-toggle';
 
 export function Page({ children }: PropsWithChildren) {
   const theme = useTheme();
@@ -21,7 +22,7 @@ export function Header() {
   }
 
   return (
-    <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
+    <View style={[styles.header, { backgroundColor: theme.backgroundElement, borderBottomColor: theme.border }]}>
       <View style={styles.identity}>
         <Pressable onPress={() => router.replace('/')}>
           <ThemedText style={[styles.brand, { color: theme.brand }]}>Blog Educacional</ThemedText>
@@ -29,6 +30,7 @@ export function Header() {
         {session && <ThemedText style={[styles.username, { color: theme.textSecondary }]}>{session.user.username}</ThemedText>}
       </View>
       <View style={styles.headerActions}>
+        <ThemeToggle />
         {canManageContent && <Pressable onPress={() => router.push('/admin')}>
           <ThemedText style={{ color: theme.brand }}>Painel</ThemedText>
         </Pressable>}
