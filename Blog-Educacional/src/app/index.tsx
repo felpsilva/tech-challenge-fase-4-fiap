@@ -8,6 +8,7 @@ import { Header, Page, contentStyles } from '@/components/blog-ui';
 import { ThemedText } from '@/components/themed-text';
 import { PostThumbnail } from '@/components/post-thumbnail';
 import { useTheme } from '@/hooks/use-theme';
+import { formatPublicationDate } from '@/lib/format-date';
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -50,7 +51,8 @@ export default function HomeScreen() {
         {filteredPosts.map((post) => (
           <Pressable key={post.id} onPress={() => router.push({ pathname: '/posts/[id]', params: { id: String(post.id) } })} style={({ pressed }) => [styles.card, { borderColor: theme.border, backgroundColor: theme.background }, pressed && { opacity: 0.75 }]}>
             <PostThumbnail postId={post.id} imageUrl={post.image_url} version={post.updated_at} />
-            <ThemedText style={[styles.author, { color: theme.brand }]}>Professor {post.author?.username ?? `#${post.user_id}`}</ThemedText>
+            <ThemedText style={[styles.author, { color: theme.brand }]}>{post.user?.username ?? post.author?.username ?? `#${post.user_id}`}</ThemedText>
+            {!!post.created_at && <ThemedText type="small" style={{ color: theme.textSecondary }}>{formatPublicationDate(post.created_at)}</ThemedText>}
             <ThemedText style={styles.title}>{post.title}</ThemedText>
             <ThemedText numberOfLines={3} style={{ color: theme.textSecondary }}>{post.content}</ThemedText>
             {!!post.categories?.length && <ThemedText type="small" style={{ color: theme.brand }}>{post.categories.map((category) => category.name).join(' · ')}</ThemedText>}

@@ -18,7 +18,7 @@ export default function LoginScreen() {
     setSaving(true);
     try {
       await signIn(username, password);
-      router.replace('/admin');
+      router.replace('/');
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'Não foi possível entrar.');
     } finally {

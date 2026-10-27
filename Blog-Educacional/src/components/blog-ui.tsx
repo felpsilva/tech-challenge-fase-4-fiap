@@ -15,17 +15,25 @@ export function Page({ children }: PropsWithChildren) {
 export function Header() {
   const theme = useTheme();
   const { session, canManageContent, signOut } = useAuth();
+  async function handleSignOut() {
+    await signOut();
+    router.replace('/');
+  }
+
   return (
     <View style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.border }]}>
-      <Pressable onPress={() => router.replace('/')}>
-        <ThemedText style={[styles.brand, { color: theme.brand }]}>Blog Educacional</ThemedText>
-      </Pressable>
+      <View style={styles.identity}>
+        <Pressable onPress={() => router.replace('/')}>
+          <ThemedText style={[styles.brand, { color: theme.brand }]}>Blog Educacional</ThemedText>
+        </Pressable>
+        {session && <ThemedText style={[styles.username, { color: theme.textSecondary }]}>{session.user.username}</ThemedText>}
+      </View>
       <View style={styles.headerActions}>
         {canManageContent && <Pressable onPress={() => router.push('/admin')}>
           <ThemedText style={{ color: theme.brand }}>Painel</ThemedText>
         </Pressable>}
         {session ? (
-          <Pressable onPress={() => void signOut()}>
+          <Pressable onPress={() => void handleSignOut()}>
             <ThemedText style={{ color: theme.textSecondary }}>Sair</ThemedText>
           </Pressable>
         ) : (
@@ -87,7 +95,9 @@ export function SectionTitle({ title, description }: { title: string; descriptio
 const styles = StyleSheet.create({
   page: { flex: 1 },
   header: { minHeight: 68, paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  identity: { gap: 0, paddingTop: 2 },
   brand: { fontSize: 19, fontWeight: '700' },
+  username: { fontSize: 14 },
   headerActions: { flexDirection: 'row', gap: 18, alignItems: 'center' },
   content: { padding: 20, gap: 18, maxWidth: 900, width: '100%', alignSelf: 'center' },
   field: { gap: 7 },

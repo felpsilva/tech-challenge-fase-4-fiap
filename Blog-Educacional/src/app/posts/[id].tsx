@@ -8,6 +8,7 @@ import { Header, Message, Page, contentStyles } from '@/components/blog-ui';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { PostThumbnail } from '@/components/post-thumbnail';
+import { formatPublicationDate } from '@/lib/format-date';
 
 export default function PostScreen() {
   const theme = useTheme();
@@ -26,7 +27,8 @@ export default function PostScreen() {
     {(error || invalidId) && <Message>{error || 'Post inválido.'}</Message>}
     {post && <View style={styles.article}>
       <PostThumbnail postId={post.id} imageUrl={post.image_url} version={post.updated_at} />
-      <ThemedText style={[styles.kicker, { color: theme.brand }]}>Por {post.author?.username ?? `professor #${post.user_id}`}</ThemedText>
+      <ThemedText style={[styles.kicker, { color: theme.brand }]}>Por {post.user?.username ?? post.author?.username ?? `${post.user_id}`}</ThemedText>
+      {!!post.created_at && <ThemedText style={{ color: theme.textSecondary }}>{formatPublicationDate(post.created_at)}</ThemedText>}
       <ThemedText type="heading">{post.title}</ThemedText>
       {!!post.categories?.length && <ThemedText style={{ color: theme.textSecondary }}>{post.categories.map((category) => category.name).join(' · ')}</ThemedText>}
       <ThemedText style={styles.body}>{post.content}</ThemedText>

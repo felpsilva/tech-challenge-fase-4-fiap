@@ -55,6 +55,7 @@ export interface Post {
   created_at?: string;
   updated_at?: string;
   categories?: Category[];
+  user?: User;
   author?: User;
 }
 
