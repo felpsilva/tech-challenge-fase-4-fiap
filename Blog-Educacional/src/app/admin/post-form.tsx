@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
+import { actions, RichEditor, RichToolbar } from 'react-native-pell-rich-editor';
 
 import { ActionButton, Field, Header, Message, Page, SectionTitle, contentStyles } from '@/components/blog-ui';
 import { postService } from '@/services/post-service';
@@ -10,6 +11,7 @@ import { Post } from '@/types/api';
 import { useAuth } from '@/context/auth-context';
 import { ThemedText } from '@/components/themed-text';
 import { PostThumbnail } from '@/components/post-thumbnail';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function PostFormScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -67,8 +69,8 @@ export default function PostFormScreen() {
     <SectionTitle title={id ? 'Editar postagem' : 'Criar postagem'} description="Preencha os dados da publicação." />
     <Field label="Título" value={post.title ?? ''} onChangeText={(title) => setPost((current) => ({ ...current, title }))} />
     <Field label="Slug" value={post.slug ?? ''} onChangeText={(slug) => setPost((current) => ({ ...current, slug }))} placeholder="titulo-da-publicacao" />
-    <Field label="Conteúdo" value={post.content ?? ''} onChangeText={(content) => setPost((current) => ({ ...current, content }))} multiline numberOfLines={8} textAlignVertical="top" />
-    <Field label="Autor (ID)" value={String(post.user_id ?? session?.user.id ?? '')} onChangeText={(value) => setPost((current) => ({ ...current, user_id: Number(value) || undefined }))} keyboardType="number-pad" />
+    <RichTextEditor key={post.id ?? 'new'} value={post.content ?? ''} onChange={(content) => setPost((current) => ({ ...current, content }))} />
+    <Field label="Autor" value={post.user?.username ?? session?.user.username ?? ''} editable={false} />
     <View style={styles.imageSection}>
       <ThemedText type="smallBold">Imagem destacada</ThemedText>
       <ThemedText type="small">JPEG, PNG ou WebP. Tamanho máximo: 2 MB. A imagem será usada na home e nesta edição.</ThemedText>
@@ -87,7 +89,64 @@ export default function PostFormScreen() {
   </View></ScrollView></Page>;
 }
 
+function RichTextEditor({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const theme = useTheme();
+  const editorRef = useRef<RichEditor>(null);
+
+  return (
+    <View style={styles.editor}>
+      <ThemedText type="smallBold">Conteúdo</ThemedText>
+      <RichToolbar
+        editor={editorRef}
+        actions={[
+          actions.setBold,
+          actions.setItalic,
+          actions.heading1,
+          actions.insertBulletsList,
+          actions.insertOrderedList,
+          actions.undo,
+          actions.redo,
+        ]}
+        style={[styles.toolbar, { borderColor: theme.border, backgroundColor: theme.backgroundElement }]}
+        flatContainerStyle={styles.toolbarItems}
+        iconTint={theme.text}
+        selectedIconTint={theme.brand}
+        disabledIconTint={theme.textSecondary}
+        selectedButtonStyle={{ backgroundColor: theme.backgroundSelected, borderRadius: 6 }}
+      />
+      <RichEditor
+        ref={editorRef}
+        initialContentHTML={toInitialEditorHtml(value)}
+        onChange={onChange}
+        placeholder="Escreva o conteúdo da publicação..."
+        editorStyle={{
+          backgroundColor: theme.background,
+          color: theme.text,
+          placeholderColor: theme.textSecondary,
+          contentCSSText: 'font-size: 16px; line-height: 1.5;',
+        }}
+        style={[styles.editorInput, { borderColor: theme.border, backgroundColor: theme.background }]}
+      />
+      <ThemedText type="small" style={{ color: theme.textSecondary }}>Use a barra de ferramentas para formatar o conteúdo.</ThemedText>
+    </View>
+  );
+}
+
+function toInitialEditorHtml(value: string) {
+  if (!value) return '';
+  if (/<[a-z][\s\S]*>/i.test(value)) return value;
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br />');
+}
+
 const styles = StyleSheet.create({
+  editor: { gap: 7 },
+  toolbar: { minHeight: 44, borderWidth: 1, borderRadius: 8, overflow: 'hidden' },
+  toolbarItems: { backgroundColor: 'transparent' },
+  editorInput: { minHeight: 240, borderWidth: 1, borderRadius: 8 },
   imageSection: { gap: 8 },
   preview: { width: '100%', aspectRatio: 16 / 9, borderRadius: 10 },
   imageActions: { gap: 12, alignItems: 'flex-start' },

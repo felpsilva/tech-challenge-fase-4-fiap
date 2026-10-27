@@ -9,6 +9,7 @@ import { ThemedText } from '@/components/themed-text';
 import { PostThumbnail } from '@/components/post-thumbnail';
 import { useTheme } from '@/hooks/use-theme';
 import { formatPublicationDate } from '@/lib/format-date';
+import { postHtmlToText } from '@/lib/post-content';
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -27,7 +28,7 @@ export default function HomeScreen() {
   const filteredPosts = useMemo(() => {
     const term = query.trim().toLowerCase();
     if (!term) return posts;
-    return posts.filter((post) => `${post.title} ${post.content} ${post.slug}`.toLowerCase().includes(term));
+    return posts.filter((post) => `${post.title} ${postHtmlToText(post.content)} ${post.slug}`.toLowerCase().includes(term));
   }, [posts, query]);
 
   return (
@@ -54,7 +55,7 @@ export default function HomeScreen() {
             <ThemedText style={[styles.author, { color: theme.brand }]}>{post.user?.username ?? post.author?.username ?? `#${post.user_id}`}</ThemedText>
             {!!post.created_at && <ThemedText type="small" style={{ color: theme.textSecondary }}>{formatPublicationDate(post.created_at)}</ThemedText>}
             <ThemedText style={styles.title}>{post.title}</ThemedText>
-            <ThemedText numberOfLines={3} style={{ color: theme.textSecondary }}>{post.content}</ThemedText>
+            <ThemedText numberOfLines={3} style={{ color: theme.textSecondary }}>{postHtmlToText(post.content)}</ThemedText>
             {!!post.categories?.length && <ThemedText type="small" style={{ color: theme.brand }}>{post.categories.map((category) => category.name).join(' · ')}</ThemedText>}
           </Pressable>
         ))}

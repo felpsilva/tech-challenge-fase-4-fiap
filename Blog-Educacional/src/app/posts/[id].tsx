@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import RenderHtml from '@native-html/render';
 
 import { postService } from '@/services/post-service';
 import { Post } from '@/types/api';
@@ -9,9 +10,11 @@ import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { PostThumbnail } from '@/components/post-thumbnail';
 import { formatPublicationDate } from '@/lib/format-date';
+import { sanitizePostHtml } from '@/lib/post-content';
 
 export default function PostScreen() {
   const theme = useTheme();
+  const { width } = useWindowDimensions();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [post, setPost] = useState<Post | null>(null);
   const [error, setError] = useState('');
@@ -31,7 +34,11 @@ export default function PostScreen() {
       {!!post.created_at && <ThemedText style={{ color: theme.textSecondary }}>{formatPublicationDate(post.created_at)}</ThemedText>}
       <ThemedText type="heading">{post.title}</ThemedText>
       {!!post.categories?.length && <ThemedText style={{ color: theme.textSecondary }}>{post.categories.map((category) => category.name).join(' · ')}</ThemedText>}
-      <ThemedText style={styles.body}>{post.content}</ThemedText>
+      <RenderHtml
+        contentWidth={Math.max(width - 40, 280)}
+        source={{ html: sanitizePostHtml(post.content) }}
+        baseStyle={{ color: theme.text, fontSize: 17, lineHeight: 29 }}
+      />
     </View>}
   </ScrollView></Page>;
 }
