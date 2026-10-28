@@ -8,6 +8,7 @@ import { postService } from '@/services/post-service';
 import { Post } from '@/types/api';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
+import { confirmDelete } from '@/lib/confirm-delete';
 
 export default function AdminPostsScreen() {
   const theme = useTheme();
@@ -18,8 +19,8 @@ export default function AdminPostsScreen() {
     if (!session) return;
     postService.list(session.token).then(setPosts).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : 'Falha ao carregar posts.'));
   }, [session]);
-  async function remove(id: number) {
-    if (!session) return;
+  async function remove(id: number, title: string) {
+    if (!session || !(await confirmDelete(`o post "${title}"`))) return;
     try { await postService.remove(session.token, id); setPosts((current) => current.filter((post) => post.id !== id)); }
     catch (reason) { setError(reason instanceof Error ? reason.message : 'Falha ao excluir post.'); }
   }
@@ -31,7 +32,7 @@ export default function AdminPostsScreen() {
     {!posts.length && !error && <ActivityIndicator color={theme.brand} />}
     {posts.map((post) => <View key={post.id} style={[styles.row, { borderColor: theme.border, backgroundColor: theme.background }]}>
       <Pressable style={styles.info} onPress={() => router.push({ pathname: '/posts/[id]', params: { id: String(post.id) } })}><ThemedText style={styles.title}>{post.title}</ThemedText><ThemedText type="small" style={{ color: theme.textSecondary }}>Autor: {post.user?.username ?? post.author?.username ?? `#${post.user_id}`}</ThemedText></Pressable>
-      <View style={contentStyles.row}><ActionButton variant="secondary" onPress={() => router.push({ pathname: '/admin/posts/[id]', params: { id: String(post.id) } })}>Editar</ActionButton><ActionButton variant="danger" onPress={() => void remove(post.id)}>Excluir</ActionButton></View>
+      <View style={contentStyles.row}><ActionButton variant="secondary" onPress={() => router.push({ pathname: '/admin/posts/[id]', params: { id: String(post.id) } })}>Editar</ActionButton><ActionButton variant="danger" onPress={() => void remove(post.id, post.title)}>Excluir</ActionButton></View>
     </View>)}
   </ScrollView></Page>;
 }
