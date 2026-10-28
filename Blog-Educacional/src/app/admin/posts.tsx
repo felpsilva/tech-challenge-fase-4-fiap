@@ -40,11 +40,17 @@ export default function AdminPostsScreen() {
     {error && <Message>{error}</Message>}
     {!posts.length && !error && <ActivityIndicator color={theme.brand} />}
     {visiblePosts.map((post) => <View key={post.id} style={[styles.row, { borderColor: theme.border, backgroundColor: theme.background }]}>
-      <Pressable style={styles.info} onPress={() => router.push({ pathname: '/posts/[id]', params: { id: String(post.id) } })}><ThemedText style={styles.title}>{post.title}</ThemedText><ThemedText type="small" style={{ color: theme.textSecondary }}>Autor: {post.user?.username ?? post.author?.username ?? `#${post.user_id}`}</ThemedText></Pressable>
+      <Pressable style={styles.info} onPress={() => router.push({ pathname: '/posts/[id]', params: { id: String(post.id) } })}><ThemedText style={styles.title}>{post.title}</ThemedText><ThemedText type="small" style={{ color: theme.textSecondary }}>Autor: {post.user?.username ?? post.author?.username ?? `#${post.user_id}`}</ThemedText><ThemedText type="small" style={{ color: theme.textSecondary }}>Status: {formatPostStatus(post.status)}</ThemedText></Pressable>
       <View style={contentStyles.row}><ActionButton variant="secondary" onPress={() => router.push({ pathname: '/admin/posts/[id]', params: { id: String(post.id) } })}>Editar</ActionButton><ActionButton variant="danger" onPress={() => void remove(post.id, post.title)}>Excluir</ActionButton></View>
     </View>)}
     <Pagination page={page} totalItems={posts.length} onPageChange={setPage} />
   </ScrollView></Page>;
+}
+
+function formatPostStatus(status: string) {
+  if (status === 'draft') return 'Rascunho';
+  if (status === 'published') return 'Publicado';
+  return status || 'Não informado';
 }
 
 const styles = StyleSheet.create({ row: { borderWidth: 1, borderRadius: 12, padding: 14, gap: 12 }, info: { gap: 5 }, title: { fontSize: 17, fontWeight: '700' } });

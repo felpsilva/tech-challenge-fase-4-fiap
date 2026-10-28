@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -16,6 +16,7 @@ import { useTheme } from '@/hooks/use-theme';
 export default function PostFormScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { session, canManageContent } = useAuth();
+  const theme = useTheme();
   const [post, setPost] = useState<Partial<Post>>({ status: 'published' });
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -71,6 +72,19 @@ export default function PostFormScreen() {
     <Field label="Slug" value={post.slug ?? ''} onChangeText={(slug) => setPost((current) => ({ ...current, slug }))} placeholder="titulo-da-publicacao" />
     <RichTextEditor key={post.id ?? 'new'} value={post.content ?? ''} onChange={(content) => setPost((current) => ({ ...current, content }))} />
     <Field label="Autor" value={post.user?.username ?? session?.user.username ?? ''} editable={false} />
+    <View style={styles.statusSection}>
+      <View style={styles.statusText}>
+        <ThemedText type="smallBold">Rascunho</ThemedText>
+        <ThemedText type="small" style={{ color: theme.textSecondary }}>Salve sem publicar para continuar editando depois.</ThemedText>
+      </View>
+      <Switch
+        accessibilityLabel="Salvar como rascunho"
+        value={post.status === 'draft'}
+        onValueChange={(isDraft) => setPost((current) => ({ ...current, status: isDraft ? 'draft' : 'published' }))}
+        trackColor={{ false: theme.border, true: theme.brand }}
+        thumbColor={theme.background}
+      />
+    </View>
     <View style={styles.imageSection}>
       <ThemedText type="smallBold">Imagem destacada</ThemedText>
       <ThemedText type="small">JPEG, PNG ou WebP. Tamanho máximo: 2 MB. A imagem será usada na home e nesta edição.</ThemedText>
@@ -148,6 +162,8 @@ const styles = StyleSheet.create({
   toolbarItems: { backgroundColor: 'transparent' },
   editorInput: { minHeight: 240, borderWidth: 1, borderRadius: 8 },
   imageSection: { gap: 8 },
+  statusSection: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  statusText: { flex: 1, gap: 4 },
   preview: { width: '100%', aspectRatio: 16 / 9, borderRadius: 10 },
   imageActions: { gap: 12, alignItems: 'flex-start' },
   removeImage: { color: '#B3261E', fontWeight: '700' },
