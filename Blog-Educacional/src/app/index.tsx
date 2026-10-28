@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 
 import { postService } from '@/services/post-service';
 import { Post } from '@/types/api';
-import { Header, Page, contentStyles } from '@/components/blog-ui';
+import { Header, Page, Pagination, contentStyles } from '@/components/blog-ui';
 import { ThemedText } from '@/components/themed-text';
 import { PostThumbnail } from '@/components/post-thumbnail';
 import { useTheme } from '@/hooks/use-theme';
@@ -15,6 +15,7 @@ export default function HomeScreen() {
   const theme = useTheme();
   const [posts, setPosts] = useState<Post[]>([]);
   const [query, setQuery] = useState('');
+  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -30,6 +31,7 @@ export default function HomeScreen() {
     if (!term) return posts;
     return posts.filter((post) => `${post.title} ${postHtmlToText(post.content)} ${post.slug}`.toLowerCase().includes(term));
   }, [posts, query]);
+  const visiblePosts = filteredPosts.slice(page * 10, page * 10 + 10);
 
   return (
     <Page>
@@ -41,7 +43,7 @@ export default function HomeScreen() {
         </View>
         <TextInput
           value={query}
-          onChangeText={setQuery}
+          onChangeText={(value) => { setQuery(value); setPage(0); }}
           placeholder="Buscar posts por palavras-chave"
           placeholderTextColor={theme.textSecondary}
           style={[styles.search, { color: theme.text, borderColor: theme.border, backgroundColor: theme.background }]}
@@ -49,7 +51,7 @@ export default function HomeScreen() {
         {loading && <ActivityIndicator color={theme.brand} />}
         {!!error && <ThemedText style={{ color: theme.danger }}>{error}</ThemedText>}
         {!loading && !filteredPosts.length && <ThemedText style={{ color: theme.textSecondary }}>Nenhum post encontrado.</ThemedText>}
-        {filteredPosts.map((post) => (
+        {visiblePosts.map((post) => (
           <Pressable key={post.id} onPress={() => router.push({ pathname: '/posts/[id]', params: { id: String(post.id) } })} style={({ pressed }) => [styles.card, { borderColor: theme.border, backgroundColor: theme.background }, pressed && { opacity: 0.75 }]}>
             <PostThumbnail postId={post.id} imageUrl={post.image_url} version={post.updated_at} />
             <ThemedText style={[styles.author, { color: theme.brand }]}>{post.user?.username ?? post.author?.username ?? `#${post.user_id}`}</ThemedText>
@@ -59,6 +61,7 @@ export default function HomeScreen() {
             {!!post.categories?.length && <ThemedText type="small" style={{ color: theme.brand }}>{post.categories.map((category) => category.name).join(' · ')}</ThemedText>}
           </Pressable>
         ))}
+        <Pagination page={page} totalItems={filteredPosts.length} onPageChange={setPage} />
       </ScrollView>
     </Page>
   );

@@ -94,6 +94,24 @@ export function SectionTitle({ title, description }: { title: string; descriptio
   );
 }
 
+export function Pagination({ page, totalItems, onPageChange }: {
+  page: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+}) {
+  const theme = useTheme();
+  const totalPages = Math.ceil(totalItems / 10);
+  if (totalPages <= 1) return null;
+
+  return (
+    <View style={contentStyles.row}>
+      <ActionButton variant="secondary" disabled={page === 0} onPress={() => onPageChange(page - 1)}>Anterior</ActionButton>
+      <ThemedText style={{ color: theme.textSecondary }}>Página {page + 1} de {totalPages}</ThemedText>
+      <ActionButton variant="secondary" disabled={page >= totalPages - 1} onPress={() => onPageChange(page + 1)}>Próxima</ActionButton>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   page: { flex: 1 },
   header: { minHeight: 68, paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
