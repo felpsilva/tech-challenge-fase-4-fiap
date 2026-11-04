@@ -33,6 +33,11 @@ export function PostThumbnail({
 }
 
 const styles = StyleSheet.create({
-  frame: { width: '100%', aspectRatio: 16 / 9, overflow: 'hidden', borderRadius: 10 },
+  frame: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    overflow: 'hidden',
+    borderRadius: 10,
+  },
   image: { width: '100%', height: '100%' },
 });

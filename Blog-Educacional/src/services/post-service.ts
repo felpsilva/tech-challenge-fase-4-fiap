@@ -21,7 +21,11 @@ export const postService = {
   },
 
   update(token: string, id: number, input: UpdatePostInput) {
-    return apiRequest<Post>(`/post/${id}`, { method: 'PUT', token, body: input });
+    return apiRequest<Post>(`/post/${id}`, {
+      method: 'PUT',
+      token,
+      body: input,
+    });
   },
 
   remove(token: string, id: number) {
@@ -33,7 +37,11 @@ export const postService = {
     return version ? `${url}?v=${encodeURIComponent(String(version))}` : url;
   },
 
-  uploadThumbnail(token: string, id: number, file: { uri: string; name: string; type: string }) {
+  uploadThumbnail(
+    token: string,
+    id: number,
+    file: { uri: string; name: string; type: string },
+  ) {
     return apiUploadFile(`/post/${id}/thumbnail`, token, file);
   },
 };

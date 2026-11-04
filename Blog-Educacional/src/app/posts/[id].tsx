@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import RenderHtml from '@native-html/render';
 
@@ -22,25 +28,58 @@ export default function PostScreen() {
   useEffect(() => {
     const postId = Number(id);
     if (!Number.isInteger(postId)) return;
-    postService.get(postId).then(setPost).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : 'Não foi possível carregar o post.'));
+    postService
+      .get(postId)
+      .then(setPost)
+      .catch((reason: unknown) =>
+        setError(
+          reason instanceof Error
+            ? reason.message
+            : 'Não foi possível carregar o post.',
+        ),
+      );
   }, [id]);
 
-  return <Page><Header /><ScrollView contentContainerStyle={contentStyles.content}>
-    {!post && !error && <ActivityIndicator color={theme.brand} />}
-    {(error || invalidId) && <Message>{error || 'Post inválido.'}</Message>}
-    {post && <View style={styles.article}>
-      <PostThumbnail postId={post.id} imageUrl={post.image_url} version={post.updated_at} />
-      <ThemedText style={[styles.kicker, { color: theme.brand }]}>Por {post.user?.username ?? post.author?.username ?? `${post.user_id}`}</ThemedText>
-      {!!post.created_at && <ThemedText style={{ color: theme.textSecondary }}>{formatPublicationDate(post.created_at)}</ThemedText>}
-      <ThemedText type="heading">{post.title}</ThemedText>
-      {!!post.categories?.length && <ThemedText style={{ color: theme.textSecondary }}>{post.categories.map((category) => category.name).join(' · ')}</ThemedText>}
-      <RenderHtml
-        contentWidth={Math.max(width - 40, 280)}
-        source={{ html: sanitizePostHtml(post.content) }}
-        baseStyle={{ color: theme.text, fontSize: 17, lineHeight: 29 }}
-      />
-    </View>}
-  </ScrollView></Page>;
+  return (
+    <Page>
+      <Header />
+      <ScrollView contentContainerStyle={contentStyles.content}>
+        {!post && !error && <ActivityIndicator color={theme.brand} />}
+        {(error || invalidId) && <Message>{error || 'Post inválido.'}</Message>}
+        {post && (
+          <View style={styles.article}>
+            <PostThumbnail
+              postId={post.id}
+              imageUrl={post.image_url}
+              version={post.updated_at}
+            />
+            <ThemedText style={[styles.kicker, { color: theme.brand }]}>
+              Por{' '}
+              {post.user?.username ??
+                post.author?.username ??
+                `${post.user_id}`}
+            </ThemedText>
+            {!!post.created_at && (
+              <ThemedText style={{ color: theme.textSecondary }}>
+                {formatPublicationDate(post.created_at)}
+              </ThemedText>
+            )}
+            <ThemedText type="heading">{post.title}</ThemedText>
+            {!!post.categories?.length && (
+              <ThemedText style={{ color: theme.textSecondary }}>
+                {post.categories.map((category) => category.name).join(' · ')}
+              </ThemedText>
+            )}
+            <RenderHtml
+              contentWidth={Math.max(width - 40, 280)}
+              source={{ html: sanitizePostHtml(post.content) }}
+              baseStyle={{ color: theme.text, fontSize: 17, lineHeight: 29 }}
+            />
+          </View>
+        )}
+      </ScrollView>
+    </Page>
+  );
 }
 
 const styles = StyleSheet.create({

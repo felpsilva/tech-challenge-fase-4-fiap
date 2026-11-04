@@ -11,11 +11,19 @@ export const categoryService = {
   },
 
   create(token: string, input: CategoryInput) {
-    return apiRequest<Category>('/category', { method: 'POST', token, body: input });
+    return apiRequest<Category>('/category', {
+      method: 'POST',
+      token,
+      body: input,
+    });
   },
 
   update(token: string, id: number, input: Partial<CategoryInput>) {
-    return apiRequest<Category>(`/category/${id}`, { method: 'PUT', token, body: input });
+    return apiRequest<Category>(`/category/${id}`, {
+      method: 'PUT',
+      token,
+      body: input,
+    });
   },
 
   remove(token: string, id: number) {

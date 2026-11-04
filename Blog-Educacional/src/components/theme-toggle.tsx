@@ -18,12 +18,19 @@ export function ThemeToggle() {
         styles.toggle,
         { backgroundColor: theme.backgroundElement },
         pressed && styles.pressed,
-      ]}>
+      ]}
+    >
       <View>
         <SymbolView
-          name={resolvedMode === 'dark'
-            ? { ios: 'moon.fill', android: 'dark_mode', web: 'dark_mode' }
-            : { ios: 'sun.max.fill', android: 'light_mode', web: 'light_mode' }}
+          name={
+            resolvedMode === 'dark'
+              ? { ios: 'moon.fill', android: 'dark_mode', web: 'dark_mode' }
+              : {
+                  ios: 'sun.max.fill',
+                  android: 'light_mode',
+                  web: 'light_mode',
+                }
+          }
           tintColor={theme.textSecondary}
           size={18}
         />

@@ -1,5 +1,10 @@
 import { apiRequest } from '@/lib/api-client';
-import { CreateUserInput, SignInResponse, UpdateUserInput, User } from '@/types/api';
+import {
+  CreateUserInput,
+  SignInResponse,
+  UpdateUserInput,
+  User,
+} from '@/types/api';
 
 export const authService = {
   signIn(username: string, password: string) {
@@ -24,7 +29,11 @@ export const userService = {
   },
 
   update(token: string, id: number, input: UpdateUserInput) {
-    return apiRequest<User>(`/user/${id}`, { method: 'PUT', token, body: input });
+    return apiRequest<User>(`/user/${id}`, {
+      method: 'PUT',
+      token,
+      body: input,
+    });
   },
 
   remove(token: string, id: number) {

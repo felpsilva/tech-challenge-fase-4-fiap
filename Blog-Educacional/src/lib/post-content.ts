@@ -1,7 +1,9 @@
-const dangerousBlocks = /<(?:script|style|iframe|object|embed|form)[^>]*>[\s\S]*?<\/(?:script|style|iframe|object|embed|form)>/gi;
+const dangerousBlocks =
+  /<(?:script|style|iframe|object|embed|form)[^>]*>[\s\S]*?<\/(?:script|style|iframe|object|embed|form)>/gi;
 const dangerousTags = /<\/?(?:input|button)[^>]*>/gi;
 const eventAttributes = /\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi;
-const dangerousUrls = /\s+(?:href|src)\s*=\s*(['"])\s*(?:javascript|data):[^'"]*\1/gi;
+const dangerousUrls =
+  /\s+(?:href|src)\s*=\s*(['"])\s*(?:javascript|data):[^'"]*\1/gi;
 
 export function sanitizePostHtml(value: string) {
   return value

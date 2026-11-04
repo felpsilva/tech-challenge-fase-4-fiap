@@ -32,9 +32,7 @@ function ThemedRootLayout() {
 
   return (
     <ThemeProvider value={resolvedMode === 'dark' ? DarkTheme : DefaultTheme}>
-      <StatusBar
-        style={resolvedMode === 'dark' ? 'light' : 'dark'}
-      />
+      <StatusBar style={resolvedMode === 'dark' ? 'light' : 'dark'} />
       <AuthProvider>
         <AnimatedSplashOverlay />
         <Stack screenOptions={{ headerShown: false }} />

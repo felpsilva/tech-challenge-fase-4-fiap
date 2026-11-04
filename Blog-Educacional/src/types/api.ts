@@ -66,12 +66,11 @@ export interface CreatePostInput {
   content: string;
   image_url?: string;
   status?: string;
-  categories?: (Pick<Category, 'id'> & Partial<Pick<Category, 'name' | 'slug'>>)[];
+  categories?: (Pick<Category, 'id'> &
+    Partial<Pick<Category, 'name' | 'slug'>>)[];
 }
 
-export type UpdatePostInput = Partial<
-  Omit<CreatePostInput, 'user_id'>
->;
+export type UpdatePostInput = Partial<Omit<CreatePostInput, 'user_id'>>;
 
 export interface ApiErrorBody {
   message?: string;

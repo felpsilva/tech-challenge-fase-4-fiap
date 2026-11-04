@@ -1,4 +1,11 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { authService } from '@/services/auth-service';
 import { ApiError } from '@/lib/api-client';
@@ -72,7 +79,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       isLoading,
       signIn,
       signOut,
-      hasPermission: (...permissions) => hasSessionPermission(session, permissions),
+      hasPermission: (...permissions) =>
+        hasSessionPermission(session, permissions),
       canManageContent: hasSessionPermission(session, ['admin', 'professor']),
       canManageUsers: hasSessionPermission(session, ['admin', 'professor']),
     }),

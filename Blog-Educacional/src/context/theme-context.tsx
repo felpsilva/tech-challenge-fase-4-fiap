@@ -1,5 +1,13 @@
 import * as SecureStore from 'expo-secure-store';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Platform, useColorScheme } from 'react-native';
 
 const THEME_STORAGE_KEY = 'blog-educacional:theme';
@@ -53,7 +61,8 @@ function writeStoredThemeMode(mode: ThemeMode): void {
 
 export function ThemeModeProvider({ children }: PropsWithChildren) {
   const systemScheme = useColorScheme();
-  const systemMode: ResolvedThemeMode = systemScheme === 'dark' ? 'dark' : 'light';
+  const systemMode: ResolvedThemeMode =
+    systemScheme === 'dark' ? 'dark' : 'light';
   const [mode, setModeState] = useState<ThemeMode>('system');
 
   useEffect(() => {
@@ -83,7 +92,9 @@ export function ThemeModeProvider({ children }: PropsWithChildren) {
     [mode, resolvedMode, setMode, toggle],
   );
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 export function useThemeMode(): ThemeContextValue {

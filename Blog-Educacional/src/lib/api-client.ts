@@ -31,7 +31,8 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const requestHeaders = new Headers(headers);
   requestHeaders.set('Accept', 'application/json');
-  if (body !== undefined) requestHeaders.set('Content-Type', 'application/json');
+  if (body !== undefined)
+    requestHeaders.set('Content-Type', 'application/json');
   if (token) requestHeaders.set('Authorization', `Bearer ${token}`);
 
   let response: Response;
@@ -42,7 +43,12 @@ export async function apiRequest<T>(
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   } catch (error) {
-    throw new ApiError(error instanceof Error ? error.message : 'Não foi possível conectar à API.', 0);
+    throw new ApiError(
+      error instanceof Error
+        ? error.message
+        : 'Não foi possível conectar à API.',
+      0,
+    );
   }
 
   const responseText = await response.text();
@@ -54,7 +60,11 @@ export async function apiRequest<T>(
       responseBody = responseText;
     }
   }
-  if (!response.ok) throw new ApiError(getErrorMessage(responseBody, response.status), response.status);
+  if (!response.ok)
+    throw new ApiError(
+      getErrorMessage(responseBody, response.status),
+      response.status,
+    );
   return responseBody as T;
 }
 
@@ -75,7 +85,12 @@ export async function apiUploadFile<T>(
       body: formData,
     });
   } catch (error) {
-    throw new ApiError(error instanceof Error ? error.message : 'Não foi possível conectar à API.', 0);
+    throw new ApiError(
+      error instanceof Error
+        ? error.message
+        : 'Não foi possível conectar à API.',
+      0,
+    );
   }
 
   const responseText = await response.text();
@@ -87,6 +102,10 @@ export async function apiUploadFile<T>(
       responseBody = responseText;
     }
   }
-  if (!response.ok) throw new ApiError(getErrorMessage(responseBody, response.status), response.status);
+  if (!response.ok)
+    throw new ApiError(
+      getErrorMessage(responseBody, response.status),
+      response.status,
+    );
   return responseBody as T;
 }
