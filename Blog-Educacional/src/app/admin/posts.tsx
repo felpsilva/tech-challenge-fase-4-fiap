@@ -89,26 +89,23 @@ export default function AdminPostsScreen() {
               { borderColor: theme.border, backgroundColor: theme.background },
             ]}
           >
-            <Pressable
-              style={styles.info}
-              onPress={() =>
-                router.push({
-                  pathname: '/posts/[id]',
-                  params: { id: String(post.id) },
-                })
-              }
-            >
-              <ThemedText style={styles.title}>{post.title}</ThemedText>
-              <ThemedText type="small" style={{ color: theme.textSecondary }}>
-                Autor:{' '}
-                {post.user?.username ??
-                  post.author?.username ??
-                  `#${post.user_id}`}
-              </ThemedText>
-              <ThemedText type="small" style={{ color: theme.textSecondary }}>
-                Status: {formatPostStatus(post.status)}
-              </ThemedText>
-            </Pressable>
+            {post.status === 'published' ? (
+              <Pressable
+                style={styles.info}
+                onPress={() =>
+                  router.push({
+                    pathname: '/posts/[id]',
+                    params: { id: String(post.id) },
+                  })
+                }
+              >
+                <PostInfo post={post} textSecondary={theme.textSecondary} />
+              </Pressable>
+            ) : (
+              <View style={styles.info}>
+                <PostInfo post={post} textSecondary={theme.textSecondary} />
+              </View>
+            )}
             <View style={contentStyles.row}>
               <ActionButton
                 variant="secondary"
@@ -137,6 +134,27 @@ export default function AdminPostsScreen() {
         />
       </ScrollView>
     </Page>
+  );
+}
+
+function PostInfo({
+  post,
+  textSecondary,
+}: {
+  post: Post;
+  textSecondary: string;
+}) {
+  return (
+    <>
+      <ThemedText style={styles.title}>{post.title}</ThemedText>
+      <ThemedText type="small" style={{ color: textSecondary }}>
+        Autor:{' '}
+        {post.user?.username ?? post.author?.username ?? `#${post.user_id}`}
+      </ThemedText>
+      <ThemedText type="small" style={{ color: textSecondary }}>
+        Status: {formatPostStatus(post.status)}
+      </ThemedText>
+    </>
   );
 }
 
