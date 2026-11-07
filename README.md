@@ -30,6 +30,118 @@ EXPO_PUBLIC_API_URL=https://sua-api.example.com
 
 Posts podem ser consultados sem autenticação. A API autoriza alterações de posts e o CRUD de categorias para `admin` e `professor`. O CRUD de usuários fica restrito a `admin`. Essa regra também está disponível no contexto de autenticação por meio de `canManageContent` e `canManageUsers`, mas a validação definitiva continua sendo feita pelo backend.
 
+## Guia de uso da API
+
+### URL base
+
+A URL base padrão é:
+
+```text
+https://blog-educacional-backend-1.onrender.com
+```
+
+Para usar outra instância, defina `EXPO_PUBLIC_API_URL` no arquivo
+`Blog-Educacional/.env`.
+
+### Autenticação
+
+Faça login pelo endpoint abaixo:
+
+```bash
+curl -X POST "https://blog-educacional-backend-1.onrender.com/user/signin" \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"professor1\",\"password\":\"prof123\"}"
+```
+
+A resposta contém um token JWT:
+
+```json
+{
+  "token": "seu-token-jwt"
+}
+```
+
+Nas requisições protegidas, envie o token no cabeçalho `Authorization`:
+
+```text
+Authorization: Bearer <TOKEN_JWT>
+```
+
+### Posts
+
+| Método | Endpoint | Autenticação | Descrição |
+| --- | --- | --- | --- |
+| `GET` | `/post` | Não | Lista os posts |
+| `GET` | `/post/search?q=termo` | Não | Busca posts |
+| `GET` | `/post/{id}` | Não | Consulta um post |
+| `POST` | `/post` | Sim | Cria um post |
+| `PUT` | `/post/{id}` | Sim | Atualiza um post |
+| `DELETE` | `/post/{id}` | Sim | Exclui um post |
+| `POST` | `/post/{id}/thumbnail` | Sim | Envia a imagem de capa |
+| `GET` | `/post/{id}/thumbnail` | Não | Consulta a imagem de capa |
+
+Exemplo de criação de post:
+
+```bash
+curl -X POST "https://blog-educacional-backend-1.onrender.com/post" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN_JWT>" \
+  -d "{\"user_id\":1,\"title\":\"Introdução à programação\",\"slug\":\"introducao-a-programacao\",\"content\":\"Conteúdo do post\",\"status\":\"published\",\"categories\":[{\"id\":1}]}"
+```
+
+### Categorias
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| `GET` | `/category` | Lista as categorias |
+| `GET` | `/category/{id}` | Consulta uma categoria |
+| `POST` | `/category` | Cria uma categoria |
+| `PUT` | `/category/{id}` | Atualiza uma categoria |
+| `DELETE` | `/category/{id}` | Exclui uma categoria |
+
+Exemplo de criação de categoria:
+
+```bash
+curl -X POST "https://blog-educacional-backend-1.onrender.com/category" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN_JWT>" \
+  -d "{\"name\":\"Programação\",\"slug\":\"programacao\"}"
+```
+
+### Usuários
+
+O gerenciamento de usuários é restrito a contas com permissão `admin`.
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| `GET` | `/user` | Lista os usuários |
+| `GET` | `/user/{id}` | Consulta um usuário |
+| `POST` | `/user` | Cria um usuário |
+| `PUT` | `/user/{id}` | Atualiza um usuário |
+| `DELETE` | `/user/{id}` | Exclui um usuário |
+
+Exemplo de criação de usuário:
+
+```bash
+curl -X POST "https://blog-educacional-backend-1.onrender.com/user" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN_JWT>" \
+  -d "{\"username\":\"novo-usuario\",\"password\":\"senha-de-teste\",\"permission\":\"aluno\"}"
+```
+
+### Contas para demonstração
+
+As contas abaixo são dados de demonstração para testar os fluxos do aplicativo:
+
+| Perfil | Usuário | Senha | Permissão |
+| --- | --- | --- | --- |
+| Professor | `professor1` | `prof123` | `professor` |
+| Aluno | `aluno1` | `aluno123` | `aluno` |
+
+O professor pode testar a criação e a edição de posts e categorias. O aluno pode
+acessar os conteúdos públicos, mas não possui permissão para gerenciar conteúdo.
+Essas credenciais não devem ser utilizadas em ambientes de produção.
+
 ## Pré-requisitos
 
 - Node.js;
