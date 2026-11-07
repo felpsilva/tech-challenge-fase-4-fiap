@@ -21,7 +21,8 @@ import {
   contentStyles,
 } from '@/components/blog-ui';
 import { postService } from '@/services/post-service';
-import { Post } from '@/types/api';
+import { categoryService } from '@/services/category-service';
+import { Category, Post } from '@/types/api';
 import { useAuth } from '@/context/auth-context';
 import { ThemedText } from '@/components/themed-text';
 import { PostThumbnail } from '@/components/post-thumbnail';
@@ -33,6 +34,8 @@ export default function PostFormScreen() {
   const { session, canManageContent } = useAuth();
   const theme = useTheme();
   const [post, setPost] = useState<Partial<Post>>({ status: 'published' });
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [selectedImage, setSelectedImage] =
@@ -41,7 +44,12 @@ export default function PostFormScreen() {
     if (id && session)
       postService
         .get(Number(id), session.token)
-        .then(setPost)
+        .then((loadedPost) => {
+          setPost(loadedPost);
+          setSelectedCategoryIds(
+            loadedPost.categories?.map((category) => category.id) ?? [],
+          );
+        })
         .catch((reason: unknown) =>
           setError(
             reason instanceof Error
@@ -50,6 +58,19 @@ export default function PostFormScreen() {
           ),
         );
   }, [id, session]);
+  useEffect(() => {
+    if (!session) return;
+    categoryService
+      .list(session.token)
+      .then(setCategories)
+      .catch((reason: unknown) =>
+        setError(
+          reason instanceof Error
+            ? reason.message
+            : 'Falha ao carregar categorias.',
+        ),
+      );
+  }, [session]);
   const slugify = (value: string) =>
     value
       .normalize('NFD')
@@ -96,6 +117,9 @@ export default function PostFormScreen() {
         slug: post.slug ?? slugify(post.title),
         content: post.content,
         status: post.status ?? 'published',
+        categories: selectedCategoryIds.map((categoryId) => ({
+          id: categoryId,
+        })),
       };
       const savedPost = id
         ? await postService.update(session.token, Number(id), input)
@@ -163,6 +187,52 @@ export default function PostFormScreen() {
             value={post.user?.username ?? session?.user.username ?? ''}
             editable={false}
           />
+          <View style={styles.categorySection}>
+            <ThemedText type="smallBold">Categorias</ThemedText>
+            {categories.length ? (
+              <View style={styles.categoryList}>
+                {categories.map((category) => {
+                  const selected = selectedCategoryIds.includes(category.id);
+                  return (
+                    <Pressable
+                      key={category.id}
+                      accessibilityRole="checkbox"
+                      accessibilityState={{ checked: selected }}
+                      onPress={() =>
+                        setSelectedCategoryIds((current) =>
+                          selected
+                            ? current.filter((id) => id !== category.id)
+                            : [...current, category.id],
+                        )
+                      }
+                      style={[
+                        styles.categoryOption,
+                        {
+                          backgroundColor: selected
+                            ? theme.brand
+                            : theme.backgroundElement,
+                          borderColor: selected ? theme.brand : theme.border,
+                        },
+                      ]}
+                    >
+                      <ThemedText
+                        style={{
+                          color: selected ? '#FFFFFF' : theme.text,
+                          fontWeight: '600',
+                        }}
+                      >
+                        {category.name}
+                      </ThemedText>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            ) : (
+              <ThemedText style={{ color: theme.textSecondary }}>
+                Nenhuma categoria disponível.
+              </ThemedText>
+            )}
+          </View>
           <View style={styles.statusSection}>
             <View style={styles.statusText}>
               <ThemedText type="smallBold">Rascunho</ThemedText>
@@ -229,6 +299,18 @@ export default function PostFormScreen() {
 }
 
 const styles = StyleSheet.create({
+  categorySection: { gap: 8 },
+  categoryList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  categoryOption: {
+    borderWidth: 1,
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+  },
   imageSection: { gap: 8 },
   statusSection: {
     flexDirection: 'row',
